@@ -18,7 +18,7 @@ thread_recorder = threading.Thread(
 
 # transcribe audio recorded
 result_queue = queue.Queue()
-audio_model = whisper.load_model("medium")
+audio_model = whisper.load_model("small")
 thread_transcriber = threading.Thread(
     target=mic.transcribe_forever, 
     kwargs={
