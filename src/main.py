@@ -1,43 +1,17 @@
-import threading
-import queue
-
-import whisper
 import mic
+import causal
 
-# record ambient audio
-audio_queue = queue.Queue()
-thread_recorder = threading.Thread(
-    target=mic.record_audio,
-    kwargs={
-        'audio_queue': audio_queue,
-        'energy': 300,
-        'pause': 0.8,
-        'dynamic_energy': True,
-    },
-)
+def func(text: str):
+    print(f"Understood: {text}")
+    rep = causal.get_response(text)
+    print(f"Response: {rep}")
 
-# transcribe audio recorded
-result_queue = queue.Queue()
-audio_model = whisper.load_model("small")
-thread_transcriber = threading.Thread(
-    target=mic.transcribe_forever, 
-    kwargs={
-        'audio_queue': audio_queue, 
-        'result_queue': result_queue,
-        'audio_model': audio_model,
-    },
-)
+stop_listening = mic.setup_mic(func)
 
-thread_recorder.start()
-thread_transcriber.start()
-
-print("Waiting for transcription...")
 try:
-    while True:
-        result = result_queue.get()
-        print(result["text"])
+    input("Press Enter to stop listening...")
 except KeyboardInterrupt:
-    mic.end_mic()
+    pass
 
-thread_recorder.join()
-thread_transcriber.join()
+stop_listening(True)
+causal.end_session()

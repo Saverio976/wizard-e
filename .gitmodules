@@ -1,3 +1,0 @@
-[submodule "__pypackage__/whisper_mic"]
-	path = __pypackage__/whisper_mic
-	url = https://github.com/mallorbc/whisper_mic.git
