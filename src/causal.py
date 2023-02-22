@@ -1,32 +1,50 @@
-from transformers import BloomTokenizerFast 
-from petals import DistributedBloomForCausalLM
+from typing import Union
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-MODEL_NAME = "bigscience/bloom-petals"
-tokenizer = BloomTokenizerFast.from_pretrained(MODEL_NAME)
-model = DistributedBloomForCausalLM.from_pretrained(MODEL_NAME)
-model = model.cuda()
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
 
-sess = model.inference_session(max_length=512)
+model_used = "microsoft/DialoGPT-medium"
 
-PREFIX = None
+# def wraper_model_generate(inputs):
+#     return TRANSFORMERS_MODEL.generate(
+#         inputs,
+#         max_length=1000,
+#         do_sample=True,
+#         top_p=0.95,
+#         top_k=100,
+#         temperature=0.75,
+#         pad_token_id=TRANSFORMERS_TOKENIZER.eos_token_id,
+#     )
 
-def get_response(text: str) -> str:
-    global PREFIX
-    res = ""
-    if PREFIX is None:
-        PREFIX = f"Human: {text}\nFriendly AI:"
-    PREFIX = tokenizer(PREFIX, return_tensors="pt")["input_ids"].cuda()
-    bot_respond = True
-    while bot_respond:
-        outputs = model.generate(
-            PREFIX, max_new_tokens=1, do_sample=True, top_p=0.9, temperature=0.75, session=sess
+TOKENIZER = AutoTokenizer.from_pretrained(model_used)
+MODEL = AutoModelForCausalLM.from_pretrained(model_used)
+
+CHAT_HISTORY_IDS = None
+
+def get_response(text: str) -> Union[str, None]:
+    global chat_history_ids
+    response = ""
+    new_user_input_ids = TOKENIZER.encode(
+        text + TOKENIZER.eos_token,
+        return_tensors='pt'
+    )
+    if CHAT_HISTORY_IDS is None:
+        bot_input_ids = new_user_input_ids
+    else:
+        bot_input_ids = torch.cat(
+            [CHAT_HISTORY_IDS, new_user_input_ids], dim=-1
         )
-        outputs = tokenizer.decode(outputs[0, -1:])
-        res += outputs
-        if "\n" in outputs:
-            bot_respond = False
-        PREFIX = None
-    return res
-
-def end_session():
-    sess.close()
+    chat_history_ids = MODEL.generate(
+        bot_input_ids,
+        max_length=1000,
+        pad_token_id=TOKENIZER.eos_token_id
+    )
+    response = str(TOKENIZER.decode(
+        chat_history_ids[:, bot_input_ids.shape[-1]:][0],
+        skip_special_tokens=True
+    ))
+    if len(str(response)) < 1:
+        return None
+    return str(response)
