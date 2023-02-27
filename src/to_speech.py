@@ -11,5 +11,5 @@ def to_speech(text: str):
     sounddevice.play(
         wav,
         blocking=True,
-        samplerate=20000
+        samplerate=19000
     )
