@@ -8,8 +8,11 @@ def _callback(recognizer: sr.Recognizer, audio):
     try:
         if config.DEBUG:
             print("starts recognizer")
-        # https://github.com/openai/whisper/blob/main/model-card.md
-        text = recognizer.recognize_whisper(audio, model="small")
+        text = recognizer.recognize_whisper(
+            audio,
+            model=config.OPENAI_MODEL_RECOGNIZER,
+            language=config.OPENAI_LANGUAGE_MODEL
+        )
         if config.DEBUG:
             print("finished recognizer")
     except Exception as esc:

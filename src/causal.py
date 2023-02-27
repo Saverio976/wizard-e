@@ -5,7 +5,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-model_used = "microsoft/DialoGPT-medium"
+import config
 
 # def wraper_model_generate(inputs):
 #     return TRANSFORMERS_MODEL.generate(
@@ -18,8 +18,8 @@ model_used = "microsoft/DialoGPT-medium"
 #         pad_token_id=TRANSFORMERS_TOKENIZER.eos_token_id,
 #     )
 
-TOKENIZER = AutoTokenizer.from_pretrained(model_used)
-MODEL = AutoModelForCausalLM.from_pretrained(model_used)
+TOKENIZER = AutoTokenizer.from_pretrained(config.CAUSAL_MODEL_USED)
+MODEL = AutoModelForCausalLM.from_pretrained(config.CAUSAL_MODEL_USED)
 
 CHAT_HISTORY_IDS = None
 

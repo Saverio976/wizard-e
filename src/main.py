@@ -1,3 +1,4 @@
+import install_models
 import mic
 import causal
 import to_speech
@@ -17,7 +18,7 @@ def func(text: str):
 stop_listening = mic.setup_mic(func)
 
 try:
-    input("Press Enter to stop listening...")
+    input("Press Enter to stop listening...\n")
 except KeyboardInterrupt:
     print("Stopping...")
 
