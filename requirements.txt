@@ -6,3 +6,4 @@ SpeechRecognition
 TTS
 sounddevice
 tensorboard
+git+https://github.com/MiscellaneousStuff/whisper.git

@@ -1,13 +1,18 @@
-from TTS.api import TTS
 import sounddevice
 
-model_name = TTS.list_models()[0]
-tts = TTS(model_name, progress_bar=True)
+import config
 
-def to_speech(text: str):
+def to_speech(text: str, tts):
     if tts.speakers is None or tts.languages is None:
+        print("Model have not speakers or/and language")
         return
-    wav = tts.tts(text=text, speaker=tts.speakers[0], language=tts.languages[0])
+    if "en" not in tts.languages:
+        print("Model have not english language")
+        return
+    if "female-en-5" not in tts.speakers:
+        print("Model have not female-en-5 speaker")
+        return
+    wav = tts.tts(text=text, speaker="female-en-5", language="en")
     sounddevice.play(
         wav,
         blocking=True,

@@ -14,5 +14,9 @@ def install_models():
     _ = whisper.load_model(
         config.OPENAI_MODEL_RECOGNIZER
     )
-    model_name = TTS.list_models()[0]
-    _ = TTS(model_name, progress_bar=True)
+    if config.TTS_MODEL not in TTS.list_models():
+        print("ERROR: TTS model not found")
+        tts = None
+    else:
+        tts = TTS(config.TTS_MODEL, progress_bar=True)
+    return tts

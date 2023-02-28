@@ -1,24 +1,12 @@
 import install_models
 import mic
-import causal
-import to_speech
-import threading
+import Controller
 
-
-def get_response(text: str):
-    print(f"Understood: {text}")
-    rep = causal.get_response(text)
-    print(f"Response: {rep}")
-    if rep == "" or rep is None:
-        return
-    to_speech.to_speech(rep)
-
-def func(text: str):
-    threading.Thread(target=get_response, args=(text,)).run()
 
 if __name__ == "__main__":
-    install_models.install_models()
-    stop_listening = mic.setup_mic(func)
+    tts = install_models.install_models()
+    controller = Controller.Controller(tts)
+    stop_listening = mic.setup_mic(controller.get_response)
 
     try:
         input("Press Enter to stop listening...\n")
