@@ -21,7 +21,7 @@ class Controller:
         to_speech.to_speech(text, self._tts)
 
     def speak_voice_off(self, text: str):
-        to_speech.to_speech(text, self._tts, speaker="male-en-5")
+        to_speech.to_speech(text, self._tts, speaker="male-en-2")
 
     def chatbot_gen_response(self, text: str):
         rep = causal.get_response(text)
