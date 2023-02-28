@@ -1,6 +1,6 @@
 DEBUG=True
 
-CAUSAL_MODEL_USED = "microsoft/DialoGPT-medium"
+CAUSAL_MODEL_USED = "microsoft/GODEL-v1_1-base-seq2seq"
 
 # https://github.com/openai/whisper/blob/main/model-card.md
 OPENAI_MODEL_RECOGNIZER = "small.en"

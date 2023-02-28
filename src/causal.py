@@ -2,49 +2,45 @@ from typing import Union
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-
 import config
 
-# def wraper_model_generate(inputs):
-#     return TRANSFORMERS_MODEL.generate(
-#         inputs,
-#         max_length=1000,
-#         do_sample=True,
-#         top_p=0.95,
-#         top_k=100,
-#         temperature=0.75,
-#         pad_token_id=TRANSFORMERS_TOKENIZER.eos_token_id,
-#     )
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 TOKENIZER = AutoTokenizer.from_pretrained(config.CAUSAL_MODEL_USED)
-MODEL = AutoModelForCausalLM.from_pretrained(config.CAUSAL_MODEL_USED)
+MODEL = AutoModelForSeq2SeqLM.from_pretrained(config.CAUSAL_MODEL_USED)
 
-CHAT_HISTORY_IDS = None
+def generate(instruction, knowledge, dialog):
+    if knowledge != '':
+        knowledge = '[KNOWLEDGE] ' + knowledge
+    dialog = ' EOS '.join(dialog)
+    query = f"{instruction} [CONTEXT] {dialog} {knowledge}"
+    input_ids = TOKENIZER(f"{query}", return_tensors="pt").input_ids
+    outputs = MODEL.generate(
+        input_ids,
+        max_length=128,
+        min_length=8,
+        top_p=0.9,
+        do_sample=True
+    )
+    output = TOKENIZER.decode(outputs[0], skip_special_tokens=True)
+    return output
+
+# Instruction for a chitchat task
+INSTRUCTION = 'Instruction: given a dialogue between you and your friend, respond empathically. Be kind to your friend. Don\'t say your name each time you respond.'
+# Leave the knowldge empty
+KNOWLEDGE = 'My name is Wizard-e'
+DIALOG = []
 
 def get_response(text: str) -> Union[str, None]:
-    global chat_history_ids
-    response = ""
-    new_user_input_ids = TOKENIZER.encode(
-        text + TOKENIZER.eos_token,
-        return_tensors='pt'
-    )
-    if CHAT_HISTORY_IDS is None:
-        bot_input_ids = new_user_input_ids
-    else:
-        bot_input_ids = torch.cat(
-            [CHAT_HISTORY_IDS, new_user_input_ids], dim=-1
-        )
-    chat_history_ids = MODEL.generate(
-        bot_input_ids,
-        max_length=1000,
-        pad_token_id=TOKENIZER.eos_token_id
-    )
-    response = str(TOKENIZER.decode(
-        chat_history_ids[:, bot_input_ids.shape[-1]:][0],
-        skip_special_tokens=True
-    ))
-    if len(str(response)) < 1:
+    global DIALOG
+    DIALOG.append(text)
+    response = generate(INSTRUCTION, KNOWLEDGE, DIALOG)
+    if response == "" or response is None:
+        DIALOG.append("...")
         return None
+    DIALOG.append(str(response))
     return str(response)
+
+def clear_history():
+    global DIALOG
+    DIALOG = []
