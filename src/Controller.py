@@ -64,8 +64,6 @@ class Controller:
                 self._savedResponse = ""
 
     def action__change_mode(self, text: str) -> bool:
-        if self._currentMode not in ["live", "confirm-before"]:
-            return False
         if self._currentMode == "in-change-mode":
             if "live" in text.lower().strip().split():
                 self._currentMode = "live"
@@ -79,6 +77,8 @@ class Controller:
                 self.speak_voice_off("I don't understand the mode to switch in.")
                 self.speak_voice_off("Possibilities: 'live', 'confirm before'")
                 return True
+        if self._currentMode not in ["live", "confirm-before"]:
+            return False
         if "change mode" in text.lower().strip() or \
             "switch mode" in text.lower().strip():
             self._currentMode = "in-change-mode"
@@ -87,8 +87,6 @@ class Controller:
         return False
 
     def action__clear_chatbot(self, text: str) -> bool:
-        if self._currentMode not in ["live", "confirm-before"]:
-            return False
         if self._currentMode == "in-change-mode":
             if "yes" in text.lower().strip().replace(".,", "").split():
                 self.chatbot_clear_msg_history()
@@ -102,6 +100,8 @@ class Controller:
             else:
                 self.speak_voice_off("Do you want to clear history of chat? Respond with 'yes' or 'no'.")
                 return True
+        if self._currentMode not in ["live", "confirm-before"]:
+            return False
         if "clear history" in text.lower().strip():
             self._oldMode = self._currentMode
             self._currentMode = "in-clear-history"
