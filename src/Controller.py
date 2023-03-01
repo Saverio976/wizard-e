@@ -4,7 +4,7 @@ import config
 
 from TTS.api import TTS
 
-AVAILABLE_MODE = ["live", "confirm-before", "in-confirm-before", "sleep"]
+AVAILABLE_MODE = ["live", "confirm-before", "sleep"]
 
 class Controller:
     def __init__(self, tts: TTS):

@@ -6,4 +6,5 @@ SpeechRecognition
 TTS
 sounddevice
 tensorboard
-git+https://github.com/MiscellaneousStuff/whisper.git
+openvino
+git+https://github.com/zhuzilin/whisper-openvino.git
