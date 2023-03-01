@@ -7,36 +7,46 @@ from TTS.api import TTS
 AVAILABLE_MODE = ["live", "confirm-before", "sleep"]
 
 class Controller:
-    def __init__(self, tts: TTS):
+    def __init__(self, tts: TTS, chatbot: causal.Chatbot):
         self._tts = tts
-        self._currentMode = AVAILABLE_MODE[0]
+        self._chatbot = chatbot
+        self._currentMode = config.CONTROLER_START_MODE
         self._savedResponse = ""
+        self._out_loud = True
 
         self._actions = [
             self.action__change_mode,
             self.action__clear_chatbot,
+            self.action__sleep_mode,
         ]
 
     def speak(self, text: str):
-        to_speech.to_speech(text, self._tts)
+        if self._out_loud:
+            to_speech.to_speech(text, self._tts)
+        else:
+            print(f"Wizard-e: {text}")
 
     def speak_voice_off(self, text: str):
-        to_speech.to_speech(text, self._tts, speaker="male-en-2")
+        if self._out_loud:
+            to_speech.to_speech(text, self._tts, speaker="male-en-2")
+        else:
+            print(f"Assistant: {text}")
 
     def chatbot_gen_response(self, text: str):
-        rep = causal.get_response(text)
+        rep = self._chatbot.get_response(text)
         if config.DEBUG:
-            print(f"Response: {rep}")
+            print(f"LOG[Response: {rep}]")
         if rep == "" or rep is None:
             return
         self.speak(rep)
 
     def chatbot_clear_msg_history(self):
-        causal.clear_history()
+        self._chatbot.clear_history()
 
-    def get_response(self, text: str):
+    def get_response(self, text: str, out_loud=True):
+        self._out_loud = out_loud
         if config.DEBUG:
-            print(f"Understood: {text}")
+            print(f"LOG[Understood: {text}]")
         if self._currentMode == "sleep":
             self.action__sleep_mode(text)
             return
@@ -87,7 +97,7 @@ class Controller:
         return False
 
     def action__clear_chatbot(self, text: str) -> bool:
-        if self._currentMode == "in-change-mode":
+        if self._currentMode == "in-clear-history":
             if "yes" in text.lower().strip().replace(".,", "").split():
                 self.chatbot_clear_msg_history()
                 self._currentMode = self._oldMode
