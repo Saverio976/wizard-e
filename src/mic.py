@@ -4,6 +4,7 @@ import speech_recognition as sr
 
 import config
 
+
 def _callback(recognizer: sr.Recognizer, audio):
     try:
         if config.DEBUG:
@@ -11,7 +12,7 @@ def _callback(recognizer: sr.Recognizer, audio):
         text = recognizer.recognize_whisper(
             audio,
             model=config.OPENAI_MODEL_RECOGNIZER,
-            language=config.OPENAI_LANGUAGE_MODEL
+            language=config.OPENAI_LANGUAGE_MODEL,
         )
         if config.DEBUG:
             print("LOG[Finished recognizer]")
@@ -20,6 +21,7 @@ def _callback(recognizer: sr.Recognizer, audio):
         text = ""
     _callback.__func_callback(text)
     return text
+
 
 def setup_mic(func_to_call: Callable[[str], None]) -> Callable[[bool], None]:
     mic = sr.Microphone()

@@ -1,9 +1,8 @@
 import sys
 
+import Controller
 import install_models
 import mic
-import Controller
-
 
 if __name__ == "__main__":
     tts, chatbot = install_models.install_models()
@@ -14,7 +13,9 @@ if __name__ == "__main__":
     controller = Controller.Controller(tts, chatbot)
     stop_listening = mic.setup_mic(controller.get_response)
 
-    print("Write '!!QUIT' or Ctrl+C to exit. Else write your sentences that you don't want to say out loud\n")
+    print(
+        "Write '!!QUIT' or Ctrl+C to exit. Else write your sentences that you don't want to say out loud\n"
+    )
     try:
         while True:
             sentence = input(">> ")

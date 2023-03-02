@@ -1,13 +1,14 @@
-import causal
-import to_speech
-import config
-
 from TTS.api import TTS
+
+import Chatbot
+import config
+import to_speech
 
 AVAILABLE_MODE = ["live", "confirm-before", "sleep"]
 
+
 class Controller:
-    def __init__(self, tts: TTS, chatbot: causal.Chatbot):
+    def __init__(self, tts: TTS, chatbot: Chatbot.Chatbot):
         self._tts = tts
         self._chatbot = chatbot
         self._currentMode = config.CONTROLER_START_MODE
@@ -89,10 +90,14 @@ class Controller:
                 return True
         if self._currentMode not in ["live", "confirm-before"]:
             return False
-        if "change mode" in text.lower().strip() or \
-            "switch mode" in text.lower().strip():
+        if (
+            "change mode" in text.lower().strip()
+            or "switch mode" in text.lower().strip()
+        ):
             self._currentMode = "in-change-mode"
-            self.speak_voice_off("You can select one of this two mode: 'live' or 'confirm before'.")
+            self.speak_voice_off(
+                "You can select one of this two mode: 'live' or 'confirm before'."
+            )
             return True
         return False
 
@@ -108,25 +113,33 @@ class Controller:
                 self._currentMode = self._oldMode
                 return True
             else:
-                self.speak_voice_off("Do you want to clear history of chat? Respond with 'yes' or 'no'.")
+                self.speak_voice_off(
+                    "Do you want to clear history of chat? Respond with 'yes' or 'no'."
+                )
                 return True
         if self._currentMode not in ["live", "confirm-before"]:
             return False
         if "clear history" in text.lower().strip():
             self._oldMode = self._currentMode
             self._currentMode = "in-clear-history"
-            self.speak_voice_off("Do you want to clear history of chat? Respond with 'yes' or 'no'.")
+            self.speak_voice_off(
+                "Do you want to clear history of chat? Respond with 'yes' or 'no'."
+            )
             return True
         return False
 
     def action__sleep_mode(self, text: str) -> bool:
         if self._currentMode == "sleep":
-            if "sleep disabled" in text.lower().strip().replace(".,", "") or \
-                "sleep mode disabled" in text.lower().strip().replace(".,", "") or \
-                "sleep disable" in text.lower().strip().replace(".,", "") or \
-                "sleep mode disable" in text.lower().strip().replace(".,", ""):
+            if (
+                "sleep disabled" in text.lower().strip().replace(".,", "")
+                or "sleep mode disabled" in text.lower().strip().replace(".,", "")
+                or "sleep disable" in text.lower().strip().replace(".,", "")
+                or "sleep mode disable" in text.lower().strip().replace(".,", "")
+            ):
                 self._currentMode = self._oldMode
-                self.speak_voice_off(f"Sleep mode disabled. {self._currentMode} mode activated.")
+                self.speak_voice_off(
+                    f"Sleep mode disabled. {self._currentMode} mode activated."
+                )
                 return True
             return True
         if self._currentMode == "in-sleep":
@@ -139,16 +152,22 @@ class Controller:
                 self.speak_voice_off("Requests cancelled.")
                 return True
             else:
-                self.speak_voice_off("Do you want to enable sleep mode? Respond with 'yes' or 'no'.")
+                self.speak_voice_off(
+                    "Do you want to enable sleep mode? Respond with 'yes' or 'no'."
+                )
                 return True
         if self._currentMode not in ["live", "confirm-before"]:
             return False
-        if "sleep enabled" in text.lower().strip().replace(".,", "") or \
-            "sleep mode enabled" in text.lower().strip().replace(".,", "") or \
-            "sleep enable" in text.lower().strip().replace(".,", "") or \
-            "sleep mode enable" in text.lower().strip().replace(".,", ""):
+        if (
+            "sleep enabled" in text.lower().strip().replace(".,", "")
+            or "sleep mode enabled" in text.lower().strip().replace(".,", "")
+            or "sleep enable" in text.lower().strip().replace(".,", "")
+            or "sleep mode enable" in text.lower().strip().replace(".,", "")
+        ):
             self._oldMode = self._currentMode
             self._currentMode = "in-sleep"
-            self.speak_voice_off("Do you want to enable sleep mode? Respond with 'yes' or 'no'.")
+            self.speak_voice_off(
+                "Do you want to enable sleep mode? Respond with 'yes' or 'no'."
+            )
             return True
         return False

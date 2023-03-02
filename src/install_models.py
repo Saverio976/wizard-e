@@ -1,17 +1,18 @@
-from TTS.api import TTS
-import whisper
-
-import config
-import causal
-
 import sys
+
+import whisper
+from TTS.api import TTS
+
+import Chatbot
+import config
+
 
 def install_models():
     if config.DEBUG:
-        print("LOG[Start launching causal model]")
-    chatbot = causal.Chatbot()
+        print("LOG[Start launching Chatbot model]")
+    chatbot = Chatbot.Chatbot()
     if config.DEBUG:
-        print("LOG[Finished launching causal model]")
+        print("LOG[Finished launching Chatbot model]")
     if config.DEBUG:
         print("LOG[Start launching voice understanding model]")
     _ = whisper.load_model(config.OPENAI_MODEL_RECOGNIZER)

@@ -1,9 +1,10 @@
-from TTS.api import TTS
-import sounddevice
-
 import sys
 
+import sounddevice
+from TTS.api import TTS
+
 import config
+
 
 def to_speech(text: str, tts: TTS, speaker: str = "female-en-5"):
     if tts.speakers is None or tts.languages is None:
@@ -24,10 +25,6 @@ def to_speech(text: str, tts: TTS, speaker: str = "female-en-5"):
     sys.stdout = sys.__stdout__
     if config.DEBUG:
         print(f"LOG[Starting to play to audio]")
-    sounddevice.play(
-        wav,
-        blocking=True,
-        samplerate=19000
-    )
+    sounddevice.play(wav, blocking=True, samplerate=19000)
     if config.DEBUG:
         print(f"LOG[Finished to play to audio]")
