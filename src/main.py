@@ -4,6 +4,11 @@ import Controller
 import install_models
 import mic
 
+from plugins import change_mode
+from plugins import clear_chatbot_history
+from plugins import confirm_before_mode
+from plugins import no_confirm_mode
+
 if __name__ == "__main__":
     tts, chatbot, comparator = install_models.install_models()
     if tts is None:
@@ -11,6 +16,12 @@ if __name__ == "__main__":
         sys.exit(1)
 
     controller = Controller.Controller(tts, chatbot, comparator)
+
+    controller.register_plugin(change_mode.ChangeMode())
+    controller.register_plugin(clear_chatbot_history.ClearChatbotHistory())
+    controller.register_plugin(confirm_before_mode.ConfirmBeforeMode())
+    controller.register_plugin(no_confirm_mode.NoConfirmMode())
+ 
     stop_listening = mic.setup_mic(controller.get_response)
 
     print(

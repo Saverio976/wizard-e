@@ -5,171 +5,76 @@ from SentenceCompare import SentenceCompare
 import config
 import to_speech
 
-AVAILABLE_MODE = ["live", "confirm-before", "sleep"]
+from typing import Dict, Optional
 
+from plugins.ControllerMode import ControllerMode
 
 class Controller:
     def __init__(self, tts: TTS, chatbot: Chatbot, comparator: SentenceCompare):
-        self._tts = tts
-        self._chatbot = chatbot
-        self._comparator = comparator
-        self._currentMode = config.CONTROLER_START_MODE
-        self._savedResponse = ""
+        self.__tts = tts
+        self.chatbot = chatbot
+        self.comparator = comparator
+        self.currentMode: ControllerMode = config.CONTROLER_START_MODE
+        self.savedResponses = []
         self._out_loud = True
 
-        self._actions = [
-            self.action__change_mode,
-            self.action__clear_chatbot,
-            self.action__sleep_mode,
-        ]
+        self._plugins: Dict[str, object] = {}
+        self._pluginsNexts: Optional[object] = None
 
     def speak(self, text: str):
+        # Speak with the voice of 'Wizard-e'
         if self._out_loud:
-            to_speech.to_speech(text, self._tts)
+            to_speech.to_speech(text, self.__tts)
         else:
             print(f"Wizard-e: {text}")
 
     def speak_voice_off(self, text: str):
+        # Speak with the voice of not 'Wizard-e'
         if self._out_loud:
-            to_speech.to_speech(text, self._tts, speaker="male-en-2")
+            to_speech.to_speech(text, self.__tts, speaker="male-en-2")
         else:
             print(f"Assistant: {text}")
 
     def chatbot_gen_response(self, text: str):
-        rep = self._chatbot.get_response(text)
+        rep = self.chatbot.get_response(text)
         if config.DEBUG:
             print(f"LOG[Response: {rep}]")
         if rep == "" or rep is None:
             return
         self.speak(rep)
 
-    def chatbot_clear_msg_history(self):
-        self._chatbot.clear_history()
-
     def get_response(self, text: str, out_loud=True):
         self._out_loud = out_loud
         if config.DEBUG:
             print(f"LOG[Understood: {text}]")
-        if self._currentMode == "sleep":
-            self.action__sleep_mode(text)
-            return
-        for action in self._actions:
-            if action(text) == True:
+        if self.currentMode == ControllerMode.SLEEP:
+            plugin = self._plugins["change_current_mode"]
+            if plugin is None:
+                print("ERROR[Can't find plugin for change mode]")
                 return
-        if self._currentMode == "live":
-            self.chatbot_gen_response(text)
-        elif self._currentMode == "confirm-before":
-            self.speak(f"Understood: {text}.")
-            self.speak("Is this correct? Respond with 'yes' or 'no'.")
-            self._currentMode = "in-confirm-before"
-            self._savedResponse = text
-        elif self._currentMode == "in-confirm-before":
-            if "yes" in text.lower().strip().split():
-                self.speak("Okay. Processing...")
-                self.chatbot_gen_response(self._savedResponse)
-                self._savedResponse = ""
-            elif text.lower() == "no":
-                self.speak("Okay. You can ask again.")
-                self._currentMode = "confirm-before"
+            plugin.exec(self, text)
+            return
+        if self._pluginsNexts is not None:
+            is_picked, need_next = self._pluginsNexts.exec(self, text)
+            if is_picked:
+                print(f"LOG[plugin picked (because of need_next): {self._pluginsNexts.name}]")
+            if need_next:
+                print(f"LOG[plugin need next: {self._pluginsNexts.name}]")
+                return
             else:
-                self.speak("I don't understand.")
-                self._currentMode = "confirm-before"
-                self._savedResponse = ""
+                self._plugsNexts = None
+        for plugin in self._plugins.values():
+            is_picked, need_next = plugin.exec(self, text)
+            if is_picked:
+                print(f"LOG[plugin picked: {plugin.name}]")
+            if need_next:
+                print(f"LOG[plugin need next: {plugin.name}]")
+                self._pluginsNexts = plugin
+                break
 
-    def action__change_mode(self, text: str) -> bool:
-        if self._currentMode == "in-change-mode":
-            if "live" in text.lower().strip().split():
-                self._currentMode = "live"
-                self.speak_voice_off("Live mode activated.")
-                return True
-            elif "confirm before" in text.lower().strip():
-                self._currentMode = "confirm-before"
-                self.speak_voice_off("Confirm before mode activated.")
-                return True
-            else:
-                self.speak_voice_off("I don't understand the mode to switch in.")
-                self.speak_voice_off("Possibilities: 'live', 'confirm before'")
-                return True
-        if self._currentMode not in ["live", "confirm-before"]:
+    def register_plugin(self, plugin) -> bool:
+        # plugin: BasePlugin
+        if plugin.name in self._plugins.keys():
             return False
-        if (
-            "change mode" in text.lower().strip()
-            or "switch mode" in text.lower().strip()
-        ):
-            self._currentMode = "in-change-mode"
-            self.speak_voice_off(
-                "You can select one of this two mode: 'live' or 'confirm before'."
-            )
-            return True
-        return False
-
-    def action__clear_chatbot(self, text: str) -> bool:
-        if self._currentMode == "in-clear-history":
-            if "yes" in text.lower().strip().replace(".,", "").split():
-                self.chatbot_clear_msg_history()
-                self._currentMode = self._oldMode
-                self.speak_voice_off("Chatbot message history cleared.")
-                return True
-            elif "no" in text.lower().strip().replace(".,", "").split():
-                self.speak_voice_off("Requests cancelled.")
-                self._currentMode = self._oldMode
-                return True
-            else:
-                self.speak_voice_off(
-                    "Do you want to clear history of chat? Respond with 'yes' or 'no'."
-                )
-                return True
-        if self._currentMode not in ["live", "confirm-before"]:
-            return False
-        if "clear history" in text.lower().strip():
-            self._oldMode = self._currentMode
-            self._currentMode = "in-clear-history"
-            self.speak_voice_off(
-                "Do you want to clear history of chat? Respond with 'yes' or 'no'."
-            )
-            return True
-        return False
-
-    def action__sleep_mode(self, text: str) -> bool:
-        if self._currentMode == "sleep":
-            if (
-                "sleep disabled" in text.lower().strip().replace(".,", "")
-                or "sleep mode disabled" in text.lower().strip().replace(".,", "")
-                or "sleep disable" in text.lower().strip().replace(".,", "")
-                or "sleep mode disable" in text.lower().strip().replace(".,", "")
-            ):
-                self._currentMode = self._oldMode
-                self.speak_voice_off(
-                    f"Sleep mode disabled. {self._currentMode} mode activated."
-                )
-                return True
-            return True
-        if self._currentMode == "in-sleep":
-            if "yes" in text.lower().strip().replace(".,", "").split():
-                self._currentMode = "sleep"
-                self.speak_voice_off("Sleep mode activated.")
-                return True
-            elif "no" in text.lower().strip().replace(".,", "").split():
-                self._currentMode = self._oldMode
-                self.speak_voice_off("Requests cancelled.")
-                return True
-            else:
-                self.speak_voice_off(
-                    "Do you want to enable sleep mode? Respond with 'yes' or 'no'."
-                )
-                return True
-        if self._currentMode not in ["live", "confirm-before"]:
-            return False
-        if (
-            "sleep enabled" in text.lower().strip().replace(".,", "")
-            or "sleep mode enabled" in text.lower().strip().replace(".,", "")
-            or "sleep enable" in text.lower().strip().replace(".,", "")
-            or "sleep mode enable" in text.lower().strip().replace(".,", "")
-        ):
-            self._oldMode = self._currentMode
-            self._currentMode = "in-sleep"
-            self.speak_voice_off(
-                "Do you want to enable sleep mode? Respond with 'yes' or 'no'."
-            )
-            return True
-        return False
+        self._plugins[plugin.name] = plugin
+        return True
