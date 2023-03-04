@@ -15,3 +15,5 @@ TTS_LOGS_OPEN = ".tts.log"
 
 CONTROLER_START_MODE = "live"  # respond directly to user input
 # CONTROLER_START_MODE = "confirm-before" # ask user to confirm before respond
+
+SENTENCE_COMPARE_MODEL = "sentence-transformers/all-MiniLM-L6-v2"

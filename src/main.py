@@ -5,12 +5,12 @@ import install_models
 import mic
 
 if __name__ == "__main__":
-    tts, chatbot = install_models.install_models()
+    tts, chatbot, comparator = install_models.install_models()
     if tts is None:
         print("ERROR[TTS error]")
         sys.exit(1)
 
-    controller = Controller.Controller(tts, chatbot)
+    controller = Controller.Controller(tts, chatbot, comparator)
     stop_listening = mic.setup_mic(controller.get_response)
 
     print(

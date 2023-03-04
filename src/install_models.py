@@ -4,6 +4,7 @@ import whisper
 from TTS.api import TTS
 
 import Chatbot
+import SentenceCompare
 import config
 
 
@@ -18,6 +19,11 @@ def install_models():
     _ = whisper.load_model(config.OPENAI_MODEL_RECOGNIZER)
     if config.DEBUG:
         print("LOG[Finished launching voice understanding model]")
+    if config.DEBUG:
+        print("LOG[Start launching sentence comparison model]")
+    comparator = SentenceCompare.SentenceCompare()
+    if config.DEBUG:
+        print("LOG[Finished launching sentence comparison model]")
     if config.TTS_MODEL not in TTS.list_models():
         print("ERROR[TTS model not found]")
         tts = None
@@ -29,4 +35,4 @@ def install_models():
         sys.stdout = sys.__stdout__
         if config.DEBUG:
             print("LOG[Finished launching TTS model]")
-    return tts, chatbot
+    return tts, chatbot, comparator

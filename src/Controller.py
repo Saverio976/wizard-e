@@ -1,6 +1,7 @@
 from TTS.api import TTS
 
-import Chatbot
+from Chatbot import Chatbot
+from SentenceCompare import SentenceCompare
 import config
 import to_speech
 
@@ -8,9 +9,10 @@ AVAILABLE_MODE = ["live", "confirm-before", "sleep"]
 
 
 class Controller:
-    def __init__(self, tts: TTS, chatbot: Chatbot.Chatbot):
+    def __init__(self, tts: TTS, chatbot: Chatbot, comparator: SentenceCompare):
         self._tts = tts
         self._chatbot = chatbot
+        self._comparator = comparator
         self._currentMode = config.CONTROLER_START_MODE
         self._savedResponse = ""
         self._out_loud = True
