@@ -1,11 +1,9 @@
 transformers
 torch
-openai-whisper
 pyaudio
 SpeechRecognition
 TTS
 sounddevice
 tensorboard
-openvino
-git+https://github.com/zhuzilin/whisper-openvino.git
 sentence-transformers
+whispercpp
