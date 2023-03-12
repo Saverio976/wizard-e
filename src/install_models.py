@@ -3,7 +3,7 @@ import sys
 import whisper
 from TTS.api import TTS
 
-import Chatbot
+from ChatbotGPT import Chatbot
 import SentenceCompare
 import config
 
@@ -11,7 +11,7 @@ import config
 def install_models():
     if config.DEBUG:
         print("LOG[Start launching Chatbot model]")
-    chatbot = Chatbot.Chatbot()
+    chatbot = Chatbot()
     if config.DEBUG:
         print("LOG[Finished launching Chatbot model]")
     if config.DEBUG:

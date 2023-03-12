@@ -1,6 +1,6 @@
 from TTS.api import TTS
 
-from Chatbot import Chatbot
+from ChatbotGPT import Chatbot
 from SentenceCompare import SentenceCompare
 import config
 import to_speech

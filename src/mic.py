@@ -3,6 +3,7 @@ from typing import Callable
 import speech_recognition as sr
 
 import config
+from RecognizerWhisper import RecognizerWhisperCPP
 
 
 def _callback(recognizer: sr.Recognizer, audio):
@@ -25,7 +26,7 @@ def _callback(recognizer: sr.Recognizer, audio):
 
 def setup_mic(func_to_call: Callable[[str], None]) -> Callable[[bool], None]:
     mic = sr.Microphone()
-    rec = sr.Recognizer()
+    rec = RecognizerWhisperCPP()
     with mic as source:
         rec.adjust_for_ambient_noise(source)
     _callback.__func_callback = func_to_call
