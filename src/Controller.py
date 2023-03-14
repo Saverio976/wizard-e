@@ -1,4 +1,5 @@
-from TTS.api import TTS
+# from TTS.api import TTS
+import pyttsx3
 
 from ChatbotGPT import Chatbot
 from SentenceCompare import SentenceCompare
@@ -10,8 +11,9 @@ from typing import Dict, Optional
 from plugins.ControllerMode import ControllerMode
 
 class Controller:
-    def __init__(self, tts: TTS, chatbot: Chatbot, comparator: SentenceCompare):
-        self.__tts = tts
+    def __init__(self, engine: pyttsx3.engine.Engine, chatbot: Chatbot, comparator: SentenceCompare):
+        # self.__tts = tts
+        self.__engine = engine
         self.chatbot = chatbot
         self.comparator = comparator
         self.currentMode: ControllerMode = config.CONTROLER_START_MODE
@@ -24,14 +26,14 @@ class Controller:
     def speak(self, text: str):
         # Speak with the voice of 'Wizard-e'
         if self._out_loud:
-            to_speech.to_speech(text, self.__tts)
+            to_speech.to_speech(text, self.__engine)
         else:
             print(f"Wizard-e: {text}")
 
     def speak_voice_off(self, text: str):
         # Speak with the voice of not 'Wizard-e'
         if self._out_loud:
-            to_speech.to_speech(text, self.__tts, speaker="male-en-2")
+            to_speech.to_speech(text, self.__engine, speaker="male-en-2")
         else:
             print(f"Assistant: {text}")
 

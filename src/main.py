@@ -10,12 +10,12 @@ from plugins import confirm_before_mode
 from plugins import no_confirm_mode
 
 if __name__ == "__main__":
-    tts, chatbot, comparator = install_models.install_models()
-    if tts is None:
+    engine, chatbot, comparator = install_models.install_models()
+    if engine is None:
         print("ERROR[TTS error]")
         sys.exit(1)
 
-    controller = Controller.Controller(tts, chatbot, comparator)
+    controller = Controller.Controller(engine, chatbot, comparator)
 
     controller.register_plugin(change_mode.ChangeMode())
     controller.register_plugin(clear_chatbot_history.ClearChatbotHistory())

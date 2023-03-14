@@ -7,3 +7,4 @@ sounddevice
 tensorboard
 sentence-transformers
 whispercpp
+pyttsx3

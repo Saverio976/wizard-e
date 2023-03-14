@@ -1,25 +1,28 @@
 import os
-from typing import List, Optional, Union
+from typing import Union
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-from transformers import pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 import config
 
 
 class Chatbot:
-    def __init__(self, dialog: Optional[List[str]] = None):
-        self._pipe = pipeline(model=config.CAUSAL_MODEL_USED_GPT)
-        if dialog is None:
-            dialog = config.CHATBOT_DEFAULT_DIALOG
-        self._dialog = dialog
+    def __init__(self):
+        self._tokenizer = AutoTokenizer.from_pretrained(config.CAUSAL_MODEL_USED_GPT, cache_dir="./cache", resume_download=True)
+        self._model = AutoModelForCausalLM.from_pretrained(config.CAUSAL_MODEL_USED_GPT)
+        self._dialog = []
 
     def __generate(self):
-        dialog = "\n".join(self._dialog) + "\n<bot>:"
-        text = self._pipe(dialog)
-        print(text)
-        return None
+        dialog = "\n".join(self._dialog)
+        query = f"{dialog}\n<bot>: "
+        input_ids = self._tokenizer(f"{query}", return_tensors="pt").input_ids
+        outputs = self._model.generate(
+            input_ids, max_length=128, min_length=8, top_p=0.9, do_sample=True
+        )
+        output = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return output
 
     def get_response(self, text: str) -> Union[str, None]:
         self._dialog.append(f"<human>: {text}")
