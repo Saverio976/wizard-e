@@ -1,8 +1,8 @@
-import sys
+# import sys
 import pyttsx3
 
 import whisper
-from TTS.api import TTS
+# from TTS.api import TTS
 
 from ChatbotGPT import Chatbot
 import SentenceCompare

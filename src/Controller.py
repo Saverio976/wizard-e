@@ -9,6 +9,7 @@ import to_speech
 from typing import Dict, Optional
 
 from plugins.ControllerMode import ControllerMode
+from plugins.BasePlugin import BasePlugin
 
 class Controller:
     def __init__(self, engine: pyttsx3.engine.Engine, chatbot: Chatbot, comparator: SentenceCompare):
@@ -20,8 +21,8 @@ class Controller:
         self.savedResponses = []
         self._out_loud = True
 
-        self._plugins: Dict[str, object] = {}
-        self._pluginsNexts: Optional[object] = None
+        self._plugins: Dict[str, BasePlugin] = {}
+        self._pluginsNexts: Optional[BasePlugin] = None
 
     def speak(self, text: str):
         # Speak with the voice of 'Wizard-e'

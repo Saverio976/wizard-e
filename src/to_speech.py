@@ -5,7 +5,7 @@ import pyttsx3
 
 import config
 
-def to_speech(text: str, engine: pyttsx3.engine.Engine, _: str = "None"):
+def to_speech(text: str, engine: pyttsx3.engine.Engine, **_):
     if config.DEBUG:
         print(f"LOG[Text: {text}]")
     engine.say(text)

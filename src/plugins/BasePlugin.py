@@ -1,5 +1,7 @@
-from Controller import Controller
 from typing import Tuple
+
+def not_implemented(*_) -> Tuple[bool, bool]:
+    raise NotImplementedError
 
 class BasePlugin:
     def __init__(self, name, description):
@@ -13,4 +15,7 @@ class BasePlugin:
         :param text: The text to process.
         :return: A tuple of (plugin has done something, did the plugin need to have next text).
         """
-        raise NotImplementedError
+        return not_implemented(self, controller, text)
+
+
+from Controller import Controller
