@@ -8,6 +8,8 @@ answer (with text to speech) with microsoft/DialoGPT-medium (transformers),
 - portaudio
 https://github.com/PortAudio/portaudio
 - gcc
+- espeak
+- aplay
 
 - python dependencies:
 ```bash
