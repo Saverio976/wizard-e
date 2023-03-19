@@ -4,7 +4,7 @@ import whisper
 
 import config
 import SentenceCompare
-from ChatbotGPT import Chatbot
+from ChatbotSeq2SeqLm import ChatbotSeq2SeqLm
 
 # from TTS.api import TTS
 
@@ -13,7 +13,7 @@ from ChatbotGPT import Chatbot
 def install_models():
     if config.DEBUG:
         print("LOG[Start launching Chatbot model]")
-    chatbot = Chatbot()
+    chatbot = ChatbotSeq2SeqLm()
     if config.DEBUG:
         print("LOG[Finished launching Chatbot model]")
     if config.DEBUG:

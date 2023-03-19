@@ -3,7 +3,7 @@ import io
 import numpy as np
 import soundfile as sf
 import speech_recognition as sr
-import torch
+from transformers.utils.logging import sys
 from whispercpp import Whisper
 
 
@@ -34,6 +34,15 @@ class RecognizerWhisperCPP(sr.Recognizer):
 
         assert isinstance(audio_data, sr.AudioData), "Data must be audio data"
 
+        if show_dict is not False:
+            print("WARNING[Special recognize_whisper function, dont use `show_dict` parameter]", file=sys.stderr)
+        if language is not None:
+            print("WARNING[Special recognize_whisper function, dont use `language` parameter]", file=sys.stderr)
+        if translate is not False:
+            print("WARNING[Special recognize_whisper function, dont use `translate` parameter]", file=sys.stderr)
+        if len(transcribe_options.keys()) != 0:
+            print("WARNING[Special recognize_whisper function, dont use kwargs parameters]", file=sys.stderr)
+
         if (
             load_options
             or not hasattr(self, "whisper_model")
@@ -50,15 +59,8 @@ class RecognizerWhisperCPP(sr.Recognizer):
         audio_array, _ = sf.read(wav_stream)
         audio_array = audio_array.astype(np.float32)
 
-        result = self.whisper_model[model].transcribe(
+        w: Whisper = self.whisper_model[model]
+        result = w.transcribe(
             audio_array,
-            language=language,
-            task="translate" if translate else None,
-            fp16=torch.cuda.is_available(),
-            **transcribe_options
         )
-
-        if show_dict:
-            return result
-        else:
-            return result["text"]
+        return str(result)

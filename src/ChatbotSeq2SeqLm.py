@@ -8,7 +8,7 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import config
 
 
-class Chatbot:
+class ChatbotSeq2SeqLm:
     def __init__(
         self,
         instruction: Optional[str] = None,
@@ -16,10 +16,10 @@ class Chatbot:
         dialog: Optional[List[str]] = None,
     ):
         self._tokenizer = AutoTokenizer.from_pretrained(
-            config.CAUSAL_MODEL_USED_SEQ2SEQ
+            config.CAUSAL_MODEL_USED_SEQ2SEQ, **config.CAUSAL_MODEL_PARAMS
         )
         self._model = AutoModelForSeq2SeqLM.from_pretrained(
-            config.CAUSAL_MODEL_USED_SEQ2SEQ
+            config.CAUSAL_MODEL_USED_SEQ2SEQ, **config.CAUSAL_MODEL_PARAMS
         )
         if instruction is None:
             instruction = config.CHATBOT_DEFAULT_INSTRUCTION

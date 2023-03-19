@@ -10,6 +10,11 @@ CHATBOT_DEFAULT_DIALOG = []
 
 CAUSAL_MODEL_USED_GPT = "togethercomputer/GPT-NeoXT-Chat-Base-20B"
 
+CAUSAL_MODEL_PARAMS = {
+    "cache_dir": "./cache",
+    "resume_download": True
+}
+
 # https://github.com/openai/whisper/blob/main/model-card.md
 OPENAI_MODEL_RECOGNIZER = "small.en"
 
@@ -24,3 +29,4 @@ CONTROLER_START_MODE = ControllerMode.NO_CONFIRM  # respond directly to user inp
 # CONTROLER_START_MODE = ControllerMode.CONFIRM_BEFORE # ask user to confirm before respond
 
 SENTENCE_COMPARE_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+SENTENCE_COMPARE_CACHE_FOLDER = "./cache"

@@ -5,7 +5,7 @@ import pyttsx3
 
 import config
 import to_speech
-from ChatbotGPT import Chatbot
+from ChatbotSeq2SeqLm import ChatbotSeq2SeqLm
 from plugins.ControllerMode import ControllerMode
 from SentenceCompare import SentenceCompare
 
@@ -14,7 +14,7 @@ class Controller:
     def __init__(
         self,
         engine: pyttsx3.engine.Engine,
-        chatbot: Chatbot,
+        chatbot: ChatbotSeq2SeqLm,
         comparator: SentenceCompare,
     ):
         # self.__tts = tts

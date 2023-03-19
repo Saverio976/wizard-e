@@ -8,12 +8,14 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import config
 
 
-class Chatbot:
+class ChatbotGPT:
     def __init__(self):
         self._tokenizer = AutoTokenizer.from_pretrained(
-            config.CAUSAL_MODEL_USED_GPT, cache_dir="./cache", resume_download=True
+            config.CAUSAL_MODEL_USED_GPT, **config.CAUSAL_MODEL_PARAMS
         )
-        self._model = AutoModelForCausalLM.from_pretrained(config.CAUSAL_MODEL_USED_GPT)
+        self._model = AutoModelForCausalLM.from_pretrained(
+            config.CAUSAL_MODEL_USED_GPT, **config.CAUSAL_MODEL_PARAMS
+        )
         self._dialog = []
 
     def __generate(self):

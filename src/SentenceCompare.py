@@ -8,7 +8,7 @@ import config
 
 class SentenceCompare:
     def __init__(self):
-        self._model = SentenceTransformer(config.SENTENCE_COMPARE_MODEL)
+        self._model = SentenceTransformer(config.SENTENCE_COMPARE_MODEL, cache_folder=config.SENTENCE_COMPARE_CACHE_FOLDER)
 
     def estimate_correlation(self, text1: str, text2: str) -> float:
         """>0.80 is very similar"""
