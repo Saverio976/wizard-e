@@ -15,8 +15,12 @@ class Chatbot:
         knowledge: Optional[str] = None,
         dialog: Optional[List[str]] = None,
     ):
-        self._tokenizer = AutoTokenizer.from_pretrained(config.CAUSAL_MODEL_USED_SEQ2SEQ)
-        self._model = AutoModelForSeq2SeqLM.from_pretrained(config.CAUSAL_MODEL_USED_SEQ2SEQ)
+        self._tokenizer = AutoTokenizer.from_pretrained(
+            config.CAUSAL_MODEL_USED_SEQ2SEQ
+        )
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(
+            config.CAUSAL_MODEL_USED_SEQ2SEQ
+        )
         if instruction is None:
             instruction = config.CHATBOT_DEFAULT_INSTRUCTION
         self._instruction = instruction

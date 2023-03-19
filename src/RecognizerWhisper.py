@@ -1,9 +1,11 @@
 import io
-import speech_recognition as sr
-from whispercpp import Whisper
+
 import numpy as np
 import soundfile as sf
+import speech_recognition as sr
 import torch
+from whispercpp import Whisper
+
 
 class RecognizerWhisperCPP(sr.Recognizer):
     def __init__(self):
@@ -11,7 +13,16 @@ class RecognizerWhisperCPP(sr.Recognizer):
 
     # modification from https://github.com/Uberi/speech_recognition/blob/master/speech_recognition/__init__.py#L1460
     # use Whisper from whispercpp and not openai-whisper
-    def recognize_whisper(self, audio_data, model="base", show_dict=False, load_options=None, language=None, translate=False, **transcribe_options):
+    def recognize_whisper(
+        self,
+        audio_data,
+        model="base",
+        show_dict=False,
+        load_options=None,
+        language=None,
+        translate=False,
+        **transcribe_options
+    ):
         """
         Performs speech recognition on ``audio_data`` (an ``AudioData`` instance), using Whisper.
         The recognition language is determined by ``language``, an uncapitalized full language name like "english" or "chinese". See the full language list at https://github.com/openai/whisper/blob/main/whisper/tokenizer.py
@@ -23,9 +34,15 @@ class RecognizerWhisperCPP(sr.Recognizer):
 
         assert isinstance(audio_data, sr.AudioData), "Data must be audio data"
 
-        if load_options or not hasattr(self, "whisper_model") or self.whisper_model.get(model) is None:
+        if (
+            load_options
+            or not hasattr(self, "whisper_model")
+            or self.whisper_model.get(model) is None
+        ):
             self.whisper_model = getattr(self, "whisper_model", {})
-            self.whisper_model[model] = Whisper.from_pretrained(model, **load_options or {})
+            self.whisper_model[model] = Whisper.from_pretrained(
+                model, **load_options or {}
+            )
 
         # 16 kHz https://github.com/openai/whisper/blob/28769fcfe50755a817ab922a7bc83483159600a9/whisper/audio.py#L98-L99
         wav_bytes = audio_data.get_wav_data(convert_rate=16000)

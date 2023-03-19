@@ -1,7 +1,9 @@
 from typing import Optional, Tuple
+
+from Controller import Controller
 from plugins.BasePlugin import BasePlugin
 from plugins.ControllerMode import ControllerMode
-from Controller import Controller
+
 
 class ChangeMode(BasePlugin):
     def __init__(self):
@@ -13,7 +15,9 @@ class ChangeMode(BasePlugin):
         self.mode_to_switch = ControllerMode.CONFIRM_BEFORE
         self.mode_before = ControllerMode.CONFIRM_BEFORE
 
-    def action_in_confirmation(self, controller: Controller, text: str) -> Tuple[bool, bool]:
+    def action_in_confirmation(
+        self, controller: Controller, text: str
+    ) -> Tuple[bool, bool]:
         texts = text.lower().strip().replace(".,;?!:", " ").split()
         if "yes" in texts:
             self.in_confirmation = False
@@ -29,11 +33,13 @@ class ChangeMode(BasePlugin):
             controller.speak_voice_off("Please say 'yes' or 'no'")
             return True, True
 
-    def find_mode_to_switch(self, text: str, controller: Controller) -> Tuple[str, Optional[ControllerMode]]:
+    def find_mode_to_switch(
+        self, text: str, controller: Controller
+    ) -> Tuple[str, Optional[ControllerMode]]:
         texts = text.lower().strip().replace(".,;?!:", " ").split()
         if "mode" not in texts:
             return "", None
-        texts = texts[texts.index("mode") + 1:]
+        texts = texts[texts.index("mode") + 1 :]
         possibilities = {
             "no confirm": [0.0, ControllerMode.NO_CONFIRM],
             "confirm before": [0.0, ControllerMode.CONFIRM_BEFORE],
@@ -41,15 +47,23 @@ class ChangeMode(BasePlugin):
         }
         text = " ".join(texts)
         for key in possibilities.keys():
-            possibilities[key][0] = controller.comparator.estimate_correlation(key, text)
-        max_correlation = max(possibilities.keys(), key=lambda key: possibilities[key][0])
+            possibilities[key][0] = controller.comparator.estimate_correlation(
+                key, text
+            )
+        max_correlation = max(
+            possibilities.keys(), key=lambda key: possibilities[key][0]
+        )
         return max_correlation, possibilities[max_correlation][1]
 
     def exec(self, controller: Controller, text: str) -> Tuple[bool, bool]:
         if controller.currentMode == ControllerMode.SLEEP:
             text = text.lower().strip().replace(",?;.:/!", " ")
-            if "sleep disable" in text or "sleep off" in text or \
-                    "sleep mode disable" in text or "sleep mode off" in text:
+            if (
+                "sleep disable" in text
+                or "sleep off" in text
+                or "sleep mode disable" in text
+                or "sleep mode off" in text
+            ):
                 controller.currentMode = self.mode_before
                 controller.speak_voice_off("Sleep mode disabled")
                 return True, False

@@ -5,6 +5,7 @@ import pyttsx3
 
 import config
 
+
 def to_speech(text: str, engine: pyttsx3.engine.Engine, **_):
     if config.DEBUG:
         print(f"LOG[Text: {text}]")
@@ -12,6 +13,7 @@ def to_speech(text: str, engine: pyttsx3.engine.Engine, **_):
     engine.runAndWait()
     if config.DEBUG:
         print(f"LOG[Finished to play to audio]")
+
 
 # def to_speech(text: str, tts: TTS, speaker: str = "female-en-5"):
 #     if tts.speakers is None or tts.languages is None:

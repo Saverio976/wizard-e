@@ -1,12 +1,13 @@
 # import sys
 import pyttsx3
-
 import whisper
+
+import config
+import SentenceCompare
+from ChatbotGPT import Chatbot
+
 # from TTS.api import TTS
 
-from ChatbotGPT import Chatbot
-import SentenceCompare
-import config
 
 
 def install_models():

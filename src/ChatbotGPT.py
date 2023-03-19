@@ -10,7 +10,9 @@ import config
 
 class Chatbot:
     def __init__(self):
-        self._tokenizer = AutoTokenizer.from_pretrained(config.CAUSAL_MODEL_USED_GPT, cache_dir="./cache", resume_download=True)
+        self._tokenizer = AutoTokenizer.from_pretrained(
+            config.CAUSAL_MODEL_USED_GPT, cache_dir="./cache", resume_download=True
+        )
         self._model = AutoModelForCausalLM.from_pretrained(config.CAUSAL_MODEL_USED_GPT)
         self._dialog = []
 

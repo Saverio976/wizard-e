@@ -1,8 +1,10 @@
 import sys
-from torch import Tensor
+
 from sentence_transformers import SentenceTransformer, util
+from torch import Tensor
 
 import config
+
 
 class SentenceCompare:
     def __init__(self):

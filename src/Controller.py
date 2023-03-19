@@ -1,18 +1,23 @@
 # from TTS.api import TTS
-import pyttsx3
-
-from ChatbotGPT import Chatbot
-from SentenceCompare import SentenceCompare
-import config
-import to_speech
-
 from typing import Dict, Optional
 
-from plugins.ControllerMode import ControllerMode
+import pyttsx3
+
+import config
+import to_speech
+from ChatbotGPT import Chatbot
 from plugins.BasePlugin import BasePlugin
+from plugins.ControllerMode import ControllerMode
+from SentenceCompare import SentenceCompare
+
 
 class Controller:
-    def __init__(self, engine: pyttsx3.engine.Engine, chatbot: Chatbot, comparator: SentenceCompare):
+    def __init__(
+        self,
+        engine: pyttsx3.engine.Engine,
+        chatbot: Chatbot,
+        comparator: SentenceCompare,
+    ):
         # self.__tts = tts
         self.__engine = engine
         self.chatbot = chatbot
@@ -60,7 +65,9 @@ class Controller:
         if self._pluginsNexts is not None:
             is_picked, need_next = self._pluginsNexts.exec(self, text)
             if is_picked:
-                print(f"LOG[plugin picked (because of need_next): {self._pluginsNexts.name}]")
+                print(
+                    f"LOG[plugin picked (because of need_next): {self._pluginsNexts.name}]"
+                )
             if need_next:
                 print(f"LOG[plugin need next: {self._pluginsNexts.name}]")
                 return

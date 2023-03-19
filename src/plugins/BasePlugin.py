@@ -1,7 +1,9 @@
 from typing import Tuple
 
+
 def not_implemented(*_) -> Tuple[bool, bool]:
     raise NotImplementedError
+
 
 class BasePlugin:
     def __init__(self, name, description):

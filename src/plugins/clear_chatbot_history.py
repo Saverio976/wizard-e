@@ -1,16 +1,20 @@
 from typing import Tuple
-from plugins.BasePlugin import BasePlugin
+
 from Controller import Controller
+from plugins.BasePlugin import BasePlugin
+
 
 class ClearChatbotHistory(BasePlugin):
     def __init__(self):
         super().__init__(
             "clear_chatbot_history",
-            "clear chatbot history and saved response of controller"
+            "clear chatbot history and saved response of controller",
         )
         self.in_confirmation = False
 
-    def action_in_confirmation(self, controller: Controller, text: str) -> Tuple[bool, bool]:
+    def action_in_confirmation(
+        self, controller: Controller, text: str
+    ) -> Tuple[bool, bool]:
         texts = text.lower().strip().replace(".,;?!:", " ").split()
         if "yes" in texts:
             self.in_confirmation = False
@@ -26,7 +30,9 @@ class ClearChatbotHistory(BasePlugin):
             controller.speak_voice_off("Please say 'yes' or 'no'")
             return True, True
 
-    def action_not_in_confirmation(self, controller: Controller, text: str) -> Tuple[bool, bool]:
+    def action_not_in_confirmation(
+        self, controller: Controller, text: str
+    ) -> Tuple[bool, bool]:
         self.in_confirmation = True
         controller.speak_voice_off(f"Understood text: {text}")
         controller.speak_voice_off(f"Is this correct? Respond with 'yes' or 'no'")
@@ -35,6 +41,9 @@ class ClearChatbotHistory(BasePlugin):
     def exec(self, controller: Controller, text: str) -> Tuple[bool, bool]:
         if self.in_confirmation:
             return self.action_in_confirmation(controller, text)
-        if controller.comparator.estimate_correlation(text, "clear chatbot history") > 0.85:
+        if (
+            controller.comparator.estimate_correlation(text, "clear chatbot history")
+            > 0.85
+        ):
             return self.action_not_in_confirmation(controller, text)
         return False, False

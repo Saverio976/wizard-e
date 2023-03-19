@@ -3,11 +3,8 @@ import sys
 import Controller
 import install_models
 import mic
-
-from plugins import change_mode
-from plugins import clear_chatbot_history
-from plugins import confirm_before_mode
-from plugins import no_confirm_mode
+from plugins import (change_mode, clear_chatbot_history, confirm_before_mode,
+                     no_confirm_mode)
 
 if __name__ == "__main__":
     engine, chatbot, comparator = install_models.install_models()
@@ -21,7 +18,7 @@ if __name__ == "__main__":
     controller.register_plugin(clear_chatbot_history.ClearChatbotHistory())
     controller.register_plugin(confirm_before_mode.ConfirmBeforeMode())
     controller.register_plugin(no_confirm_mode.NoConfirmMode())
- 
+
     stop_listening = mic.setup_mic(controller.get_response)
 
     print(
