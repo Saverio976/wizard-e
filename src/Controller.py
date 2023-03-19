@@ -6,7 +6,6 @@ import pyttsx3
 import config
 import to_speech
 from ChatbotGPT import Chatbot
-from plugins.BasePlugin import BasePlugin
 from plugins.ControllerMode import ControllerMode
 from SentenceCompare import SentenceCompare
 
@@ -26,8 +25,8 @@ class Controller:
         self.savedResponses = []
         self._out_loud = True
 
-        self._plugins: Dict[str, BasePlugin] = {}
-        self._pluginsNexts: Optional[BasePlugin] = None
+        self._plugins: Dict[str, "BasePlugin"] = {}
+        self._pluginsNexts: Optional["BasePlugin"] = None
 
     def speak(self, text: str):
         # Speak with the voice of 'Wizard-e'
@@ -88,3 +87,5 @@ class Controller:
             return False
         self._plugins[plugin.name] = plugin
         return True
+
+from plugins.BasePlugin import BasePlugin
